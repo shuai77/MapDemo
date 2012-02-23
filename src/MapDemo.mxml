@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application 
+	xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+	 verticalScrollPolicy="auto" creationComplete="createHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.heptafish.map.ImageLoader;
+			import com.heptafish.map.HeptaFishCharacter;
+			import com.heptafish.map.GameMap;
+			import mx.managers.SystemManager;
+			
+			private var _mapXmlSrc:String;
+			private var _map:GameMap;
+			private var _plaerLoader:ImageLoader;
+			private var _player:HeptaFishCharacter;
+			
+			
+			private function createHandler(evet:Event):void{
+				//读取地图配置文件
+				_mapXmlSrc = "data/maps/demo1.xml";
+				var loader:URLLoader = new URLLoader(new URLRequest(_mapXmlSrc));
+				loader.addEventListener(Event.COMPLETE,initMap);
+			}
+			
+			
+			private function initMap(evet:Event):void{
+				//初始化地图
+				var mapXml:XML = new XML(evet.target.data);
+				_map = new GameMap(mapXml,this);
+				mapCanvs.addChild(_map);
+				_plaerLoader = new ImageLoader();
+				_plaerLoader.load("images/woman.png");
+				_plaerLoader.addEventListener(Event.COMPLETE,manLoaded);
+			}
+			private function manLoaded(evet:Event):void{
+				//初始化人物
+				var _bitMap:Bitmap = new Bitmap(_plaerLoader._data);
+				_player = new HeptaFishCharacter(_bitMap,true,10,5,2,0,0,1,0);
+				_player.name = "player";
+				_map.addPlayer(_player);
+				_map.addEventListener(MouseEvent.CLICK,_map.onClick);
+			}
+		]]>
+	</mx:Script>
+	<mx:Canvas x="0" y="0" width="100%" height="100%" id="mapCanvs" verticalScrollPolicy="auto"> 
+	</mx:Canvas>
+</mx:Application>
